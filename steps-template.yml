@@ -1,0 +1,13 @@
+parameters:
+  - name: AUsefulParameter
+  - name: AnotherUsefulParameter
+
+steps:
+  - script: |
+      echo 'AUsefulParameter: ${{ parameters.AUsefulParameter }}, AnotherUsefulParameter: ${{ parameters.AnotherUsefulParameter }}'
+  - ${{ if eq( variables.AUsefulVariable, 'PipelineLevelValue')}}:
+      - script: echo 'PipelineLevelValue ${{ variables.AUsefulVariable }}'
+  - ${{ if eq( variables.AUsefulVariable, 'StageLevelValue')}}:
+      - script: echo 'JobLevelValue ${{ variables.AUsefulVariable }}'
+  - ${{ if eq( variables.AUsefulVariable, 'JobLevelValue')}}:
+      - script: echo 'JobLevelValue ${{ variables.AUsefulVariable }}'

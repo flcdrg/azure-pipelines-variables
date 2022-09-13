@@ -1,0 +1,27 @@
+trigger:
+  - master
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  AUsefulVariable: "PipelineLevelValue"
+
+stages:
+  - stage: Stage1
+    displayName: Stage 1
+    variables:
+      AUsefulVariable: "StageLevelValue"
+
+    jobs:
+      - job: Job1
+        variables:
+          AUsefulVariable: "JobLevelValue"
+        steps:
+          - checkout: none
+          - script: echo "${{ variables.AUsefulVariable }}"
+
+          - template: steps-template.yml
+            parameters:
+              AUsefulParameter: ${{ variables.AUsefulVariable }}
+              AnotherUsefulParameter: $(AUsefulVariable)
