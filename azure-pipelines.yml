@@ -10,7 +10,7 @@ stages:
   jobs:
   - deployment: Stage1DeploymentJob1
     displayName: Stage 1 Deployment Job 1
-    # environment: Environment1
+    environment: Environment1
     # strategy:
     #   runOnce:
     #     deploy:
