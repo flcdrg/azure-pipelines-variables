@@ -29,3 +29,5 @@ stages:
             parameters:
               AUsefulParameter: ${{ variables.AUsefulVariable }}
               AnotherUsefulParameter: $(AUsefulVariable)
+
+      - template: jobs-template.yml
