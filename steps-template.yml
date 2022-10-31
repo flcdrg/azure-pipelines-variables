@@ -11,3 +11,7 @@ steps:
       - script: echo 'JobLevelValue ${{ variables.AUsefulVariable }}'
   - ${{ if eq( variables.AUsefulVariable, 'JobLevelValue')}}:
       - script: echo 'JobLevelValue ${{ variables.AUsefulVariable }}'
+  - script: printenv
+    displayName: 'printenv'
+  - script: echo "Hi there ${{ variables.GlobalVar }}"
+  - script: echo "Hi there $(GlobalVar)"
