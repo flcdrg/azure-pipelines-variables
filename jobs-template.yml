@@ -1,0 +1,10 @@
+jobs:
+  - job: MyJob
+    variables:
+      - template: variables-template.yml
+
+    steps:
+      - script: printenv
+        displayName: 'printenv'
+      - script: echo "Hi there ${{ variables.GlobalVar }}"
+      - script: echo "Hi there $(GlobalVar)"
