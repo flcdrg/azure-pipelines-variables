@@ -37,8 +37,6 @@ stages:
       runOnce:
         deploy:
           steps:
-          - bash: echo "${{ convertToJson(stageDependencies) }}"
-
           - bash: echo "##vso[task.setvariable variable=my_Stage2DeploymentJob1_OutputVar;isOutput=true]Variable from $(Agent.JobName)"
             name: stepVar_Stage2DeploymentJob1
             displayName: Set my_Stage2DeploymentJob1_OutputVar
@@ -59,6 +57,8 @@ stages:
   dependsOn: Stage1
   variables:
     varFrom_Stage1DeploymentJob1: $[ stageDependencies.Stage1.Stage1DeploymentJob1.outputs['Stage1DeploymentJob1.stepVar_Stage1DeploymentJob1.my_Stage1DeploymentJob1_OutputVar'] ]
+    deps: $[ convertToJson(stageDependencies.Stage1) ]
+
   jobs:
   - deployment: Stage3DeploymentJob1
     displayName: Stage 3 Deployment Job 1
@@ -67,6 +67,8 @@ stages:
       runOnce:
         deploy:
           steps:
+          - bash: echo $(deps)
+            displayName: stageDependencies.Stage1
           - bash: echo $(varFrom_Stage1DeploymentJob1)
             displayName: Display varFrom_Stage1DeploymentJob1
           - bash: printenv
@@ -112,4 +114,4 @@ stages:
       - job:
         steps:
           - checkout: none
-          - bash: echo "${{ convertToJson(stageDependencies) }}"
+          #- bash: echo "${{ convertToJson(stageDependencies) }}"
