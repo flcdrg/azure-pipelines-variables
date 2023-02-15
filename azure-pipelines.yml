@@ -93,7 +93,7 @@ stages:
   - job: Stage4Job1
     displayName: Stage 4 Job 1
     variables:
-      dependencies : $[ convertToJson(dependencies ) ]
+      dependencies: $[ convertToJson(dependencies) ]
       stageDependencies: $[ convertToJson(stageDependencies) ]
       varFrom_Stage1DeploymentJob1: $[ stageDependencies.Stage1.Stage1DeploymentJob1.outputs['Stage1DeploymentJob1.stepVar_Stage1DeploymentJob1.my_Stage1DeploymentJob1_OutputVar'] ]
       varFrom_Stage2DeploymentJob1: $[ stageDependencies.Stage2.Stage2DeploymentJob1.outputs['Stage2DeploymentJob1.stepVar_Stage2DeploymentJob1.my_Stage2DeploymentJob1_OutputVar'] ]
@@ -101,7 +101,7 @@ stages:
 
     steps:
     - checkout: none
-    - bash: echo "$(dependencies )"
+    - bash: echo "$(dependencies)"
       displayName: dependencies
     - bash: echo "$(stageDependencies)"
       displayName: stageDependencies
