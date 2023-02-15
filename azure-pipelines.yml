@@ -45,10 +45,13 @@ stages:
     displayName: Stage 2 Job 2
     dependsOn: Stage2DeploymentJob1
     variables:
+      dependencies: $[ convertToJson(dependencies) ]
       # Reference variable from deployment job in same stage
       varFrom_Stage2DeploymentJob1: $[ dependencies.Stage2DeploymentJob1.outputs['Stage2DeploymentJob1.stepVar_Stage2DeploymentJob1.my_Stage2DeploymentJob1_OutputVar'] ]
     steps:
       - checkout: none
+      - bash: echo "$(dependencies)"
+        displayName: dependencies
       - bash: echo $(varFrom_Stage2DeploymentJob1)
         displayName: Display varFrom_Stage2DeploymentJob1
 
@@ -57,6 +60,7 @@ stages:
   dependsOn: Stage1
   variables:
     varFrom_Stage1DeploymentJob1: $[ stageDependencies.Stage1.Stage1DeploymentJob1.outputs['Stage1DeploymentJob1.stepVar_Stage1DeploymentJob1.my_Stage1DeploymentJob1_OutputVar'] ]
+    dependencies: $[ convertToJson(dependencies) ]
     stageDependencies: $[ convertToJson(stageDependencies) ]
 
   jobs:
@@ -67,6 +71,8 @@ stages:
       runOnce:
         deploy:
           steps:
+          - bash: echo "$(dependencies)"
+            displayName: dependencies
           - bash: echo "$(stageDependencies)"
             displayName: stageDependencies
           - bash: echo $(varFrom_Stage1DeploymentJob1)
