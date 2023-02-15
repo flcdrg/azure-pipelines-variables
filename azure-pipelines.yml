@@ -1,3 +1,10 @@
+parameters:
+- name: listOfStrings
+  type: object
+  default:
+  - one
+  - two
+
 trigger:
  - master
 
@@ -85,7 +92,7 @@ stages:
       varFrom_Stage1DeploymentJob1: $[ stageDependencies.Stage1.Stage1DeploymentJob1.outputs['Stage1DeploymentJob1.stepVar_Stage1DeploymentJob1.my_Stage1DeploymentJob1_OutputVar'] ]
       varFrom_Stage2DeploymentJob1: $[ stageDependencies.Stage2.Stage2DeploymentJob1.outputs['Stage2DeploymentJob1.stepVar_Stage2DeploymentJob1.my_Stage2DeploymentJob1_OutputVar'] ]
       varFrom_Stage3Job2: $[ stageDependencies.Stage3.Stage3Job2.outputs['stepVar_Stage3Job2.my_Stage3Job2_OutputVar'] ]
-    
+
     steps:
     - checkout: none
     - bash: |
@@ -95,3 +102,11 @@ stages:
       displayName: Display variables
     - bash: printenv
       displayName: printenv
+
+- ${{ each value in parameters.listOfStrings }}:
+  - stage: ${{ value }}
+    displayName: ${{ value }}
+    jobs:
+      - job:
+        steps:
+          - checkout: none
