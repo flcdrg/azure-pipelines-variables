@@ -1,3 +1,10 @@
+parameters:
+- name: listOfStrings
+  type: object
+  default:
+  - one
+  - two
+
 trigger:
  - master
 
@@ -38,10 +45,13 @@ stages:
     displayName: Stage 2 Job 2
     dependsOn: Stage2DeploymentJob1
     variables:
+      dependencies: $[ convertToJson(dependencies) ]
       # Reference variable from deployment job in same stage
       varFrom_Stage2DeploymentJob1: $[ dependencies.Stage2DeploymentJob1.outputs['Stage2DeploymentJob1.stepVar_Stage2DeploymentJob1.my_Stage2DeploymentJob1_OutputVar'] ]
     steps:
       - checkout: none
+      - bash: echo "$(dependencies)"
+        displayName: dependencies
       - bash: echo $(varFrom_Stage2DeploymentJob1)
         displayName: Display varFrom_Stage2DeploymentJob1
 
@@ -50,6 +60,9 @@ stages:
   dependsOn: Stage1
   variables:
     varFrom_Stage1DeploymentJob1: $[ stageDependencies.Stage1.Stage1DeploymentJob1.outputs['Stage1DeploymentJob1.stepVar_Stage1DeploymentJob1.my_Stage1DeploymentJob1_OutputVar'] ]
+    dependencies: $[ convertToJson(dependencies) ]
+    stageDependencies: $[ convertToJson(stageDependencies) ]
+
   jobs:
   - deployment: Stage3DeploymentJob1
     displayName: Stage 3 Deployment Job 1
@@ -58,6 +71,10 @@ stages:
       runOnce:
         deploy:
           steps:
+          - bash: echo "$(dependencies)"
+            displayName: dependencies
+          - bash: echo "$(stageDependencies)"
+            displayName: stageDependencies
           - bash: echo $(varFrom_Stage1DeploymentJob1)
             displayName: Display varFrom_Stage1DeploymentJob1
           - bash: printenv
@@ -82,12 +99,18 @@ stages:
   - job: Stage4Job1
     displayName: Stage 4 Job 1
     variables:
+      dependencies: $[ convertToJson(dependencies) ]
+      stageDependencies: $[ convertToJson(stageDependencies) ]
       varFrom_Stage1DeploymentJob1: $[ stageDependencies.Stage1.Stage1DeploymentJob1.outputs['Stage1DeploymentJob1.stepVar_Stage1DeploymentJob1.my_Stage1DeploymentJob1_OutputVar'] ]
       varFrom_Stage2DeploymentJob1: $[ stageDependencies.Stage2.Stage2DeploymentJob1.outputs['Stage2DeploymentJob1.stepVar_Stage2DeploymentJob1.my_Stage2DeploymentJob1_OutputVar'] ]
       varFrom_Stage3Job2: $[ stageDependencies.Stage3.Stage3Job2.outputs['stepVar_Stage3Job2.my_Stage3Job2_OutputVar'] ]
-    
+
     steps:
     - checkout: none
+    - bash: echo "$(dependencies)"
+      displayName: dependencies
+    - bash: echo "$(stageDependencies)"
+      displayName: stageDependencies
     - bash: |
         echo "varFrom_Stage1DeploymentJob1: $(varFrom_Stage1DeploymentJob1)"
         echo "varFrom_Stage2DeploymentJob1: $(varFrom_Stage2DeploymentJob1)"
@@ -95,3 +118,12 @@ stages:
       displayName: Display variables
     - bash: printenv
       displayName: printenv
+
+- ${{ each value in parameters.listOfStrings }}:
+  - stage: ${{ value }}
+    displayName: ${{ value }}
+    jobs:
+      - job:
+        steps:
+          - checkout: none
+          #- bash: echo "${{ convertToJson(stageDependencies) }}"
