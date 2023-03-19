@@ -18,13 +18,13 @@ stages:
   - deployment: Stage1DeploymentJob1
     displayName: Stage 1 Deployment Job 1
     environment: Environment1
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - bash: echo "##vso[task.setvariable variable=my_Stage1DeploymentJob1_OutputVar;isOutput=true]Variable from $(Agent.JobName)"
-            name: stepVar_Stage1DeploymentJob1
-            displayName: Set my_Stage1DeploymentJob1_OutputVar
+    # strategy:
+    #   runOnce:
+    #     deploy:
+    #       steps:
+    #       - bash: echo "##vso[task.setvariable variable=my_Stage1DeploymentJob1_OutputVar;isOutput=true]Variable from $(Agent.JobName)"
+    #         name: stepVar_Stage1DeploymentJob1
+    #         displayName: Set my_Stage1DeploymentJob1_OutputVar
 
 - stage: Stage2
   displayName: Stage 2
