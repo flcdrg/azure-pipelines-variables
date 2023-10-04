@@ -17,5 +17,8 @@ steps:
   - script: echo "Hi there $(GlobalVar)"
   - ${{ each var in variables }}:
       - script: |
-          echo "${{ var.Key }}: ${{ var.Value }}"
+          echo $VALUE
         displayName: 'Variable: ${{ var.Key }}'
+        condition: always()
+        env:
+          VALUE: ${{ var.Value }}
