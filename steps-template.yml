@@ -15,3 +15,7 @@ steps:
     displayName: 'printenv'
   - script: echo "Hi there ${{ variables.GlobalVar }}"
   - script: echo "Hi there $(GlobalVar)"
+  - ${{ each var in variables }}:
+      - script: |
+          echo "${{ var.Key }}: ${{ var.Value }}"
+        displayName: 'Variable: ${{ var.Key }}'
