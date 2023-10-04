@@ -6,7 +6,7 @@ parameters:
   - two
 
 trigger:
- - master
+ - main
 
 pool:
   vmImage: 'ubuntu-latest'
