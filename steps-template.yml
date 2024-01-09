@@ -12,13 +12,13 @@ steps:
   - ${{ if eq( variables.AUsefulVariable, 'JobLevelValue')}}:
       - script: echo 'JobLevelValue ${{ variables.AUsefulVariable }}'
   - script: printenv
-    displayName: 'printenv'
+    displayName: "printenv"
   - script: echo "Hi there ${{ variables.GlobalVar }}"
   - script: echo "Hi there $(GlobalVar)"
   - ${{ each var in variables }}:
       - script: |
           echo $VALUE
-        displayName: 'Variable: ${{ var.Key }}'
+        displayName: "Variable: ${{ var.Key }}"
         condition: always()
         env:
           VALUE: ${{ var.Value }}

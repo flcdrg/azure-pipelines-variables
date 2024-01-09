@@ -6,6 +6,9 @@ pool:
 
 variables:
   - template: variables-template.yml
+    parameters:
+      VariableParameter: PipelineLevel
+
   - name: AUsefulVariable
     value: "PipelineLevelValue"
 
@@ -23,7 +26,7 @@ stages:
           - checkout: none
           - script: echo "${{ variables.AUsefulVariable }}"
           - script: printenv
-            displayName: 'printenv'
+            displayName: "printenv"
 
           - template: steps-template.yml
             parameters:

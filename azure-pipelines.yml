@@ -1,129 +1,129 @@
 parameters:
-- name: listOfStrings
-  type: object
-  default:
-  - one
-  - two
+  - name: listOfStrings
+    type: object
+    default:
+      - one
+      - two
 
 trigger:
- - main
+  - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: "ubuntu-latest"
 
 stages:
-- stage: Stage1
-  displayName: Stage 1
-  jobs:
-  - deployment: Stage1DeploymentJob1
-    displayName: Stage 1 Deployment Job 1
-    environment: Environment1
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - bash: echo "##vso[task.setvariable variable=my_Stage1DeploymentJob1_OutputVar;isOutput=true]Variable from $(Agent.JobName)"
-            name: stepVar_Stage1DeploymentJob1
-            displayName: Set my_Stage1DeploymentJob1_OutputVar
+  - stage: Stage1
+    displayName: Stage 1
+    jobs:
+      - deployment: Stage1DeploymentJob1
+        displayName: Stage 1 Deployment Job 1
+        environment: Environment1
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - bash: echo "##vso[task.setvariable variable=my_Stage1DeploymentJob1_OutputVar;isOutput=true]Variable from $(Agent.JobName)"
+                  name: stepVar_Stage1DeploymentJob1
+                  displayName: Set my_Stage1DeploymentJob1_OutputVar
 
-- stage: Stage2
-  displayName: Stage 2
-  dependsOn: Stage1
-  jobs:
-  - deployment: Stage2DeploymentJob1
-    displayName: Stage 2 Deployment Job 1
-    environment: Environment2
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - bash: echo "##vso[task.setvariable variable=my_Stage2DeploymentJob1_OutputVar;isOutput=true]Variable from $(Agent.JobName)"
-            name: stepVar_Stage2DeploymentJob1
-            displayName: Set my_Stage2DeploymentJob1_OutputVar
+  - stage: Stage2
+    displayName: Stage 2
+    dependsOn: Stage1
+    jobs:
+      - deployment: Stage2DeploymentJob1
+        displayName: Stage 2 Deployment Job 1
+        environment: Environment2
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - bash: echo "##vso[task.setvariable variable=my_Stage2DeploymentJob1_OutputVar;isOutput=true]Variable from $(Agent.JobName)"
+                  name: stepVar_Stage2DeploymentJob1
+                  displayName: Set my_Stage2DeploymentJob1_OutputVar
 
-  - job: Stage2Job2
-    displayName: Stage 2 Job 2
-    dependsOn: Stage2DeploymentJob1
+      - job: Stage2Job2
+        displayName: Stage 2 Job 2
+        dependsOn: Stage2DeploymentJob1
+        variables:
+          dependencies: $[ convertToJson(dependencies) ]
+          # Reference variable from deployment job in same stage
+          varFrom_Stage2DeploymentJob1: $[ dependencies.Stage2DeploymentJob1.outputs['Stage2DeploymentJob1.stepVar_Stage2DeploymentJob1.my_Stage2DeploymentJob1_OutputVar'] ]
+        steps:
+          - checkout: none
+          - bash: echo "$(dependencies)"
+            displayName: dependencies
+          - bash: echo $(varFrom_Stage2DeploymentJob1)
+            displayName: Display varFrom_Stage2DeploymentJob1
+
+  - stage: Stage3
+    displayName: Stage 3
+    dependsOn: Stage1
     variables:
+      varFrom_Stage1DeploymentJob1: $[ stageDependencies.Stage1.Stage1DeploymentJob1.outputs['Stage1DeploymentJob1.stepVar_Stage1DeploymentJob1.my_Stage1DeploymentJob1_OutputVar'] ]
       dependencies: $[ convertToJson(dependencies) ]
-      # Reference variable from deployment job in same stage
-      varFrom_Stage2DeploymentJob1: $[ dependencies.Stage2DeploymentJob1.outputs['Stage2DeploymentJob1.stepVar_Stage2DeploymentJob1.my_Stage2DeploymentJob1_OutputVar'] ]
-    steps:
-      - checkout: none
-      - bash: echo "$(dependencies)"
-        displayName: dependencies
-      - bash: echo $(varFrom_Stage2DeploymentJob1)
-        displayName: Display varFrom_Stage2DeploymentJob1
+      stageDependencies: $[ convertToJson(stageDependencies) ]
 
-- stage: Stage3
-  displayName: Stage 3
-  dependsOn: Stage1
-  variables:
-    varFrom_Stage1DeploymentJob1: $[ stageDependencies.Stage1.Stage1DeploymentJob1.outputs['Stage1DeploymentJob1.stepVar_Stage1DeploymentJob1.my_Stage1DeploymentJob1_OutputVar'] ]
-    dependencies: $[ convertToJson(dependencies) ]
-    stageDependencies: $[ convertToJson(stageDependencies) ]
+    jobs:
+      - deployment: Stage3DeploymentJob1
+        displayName: Stage 3 Deployment Job 1
+        environment: Environment3
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - bash: echo "$(dependencies)"
+                  displayName: dependencies
+                - bash: echo "$(stageDependencies)"
+                  displayName: stageDependencies
+                - bash: echo $(varFrom_Stage1DeploymentJob1)
+                  displayName: Display varFrom_Stage1DeploymentJob1
+                - bash: printenv
+                  displayName: printenv
 
-  jobs:
-  - deployment: Stage3DeploymentJob1
-    displayName: Stage 3 Deployment Job 1
-    environment: Environment3
-    strategy:
-      runOnce:
-        deploy:
-          steps:
+      - job: Stage3Job2
+        displayName: Stage 3 Job 2
+        steps:
+          - checkout: none
+          - bash: echo "##vso[task.setvariable variable=my_Stage3Job2_OutputVar;isOutput=true]Variable from $(Agent.JobName)"
+            name: stepVar_Stage3Job2
+            displayName: Set my_Stage3Job2_OutputVar
+
+  - stage: Stage4
+    displayName: Stage 4
+    dependsOn:
+      # Need to mention stage here to be able to reference variables from it, even though the dependency is implied by Stage2 and Stage3
+      - Stage1
+      - Stage3
+      - Stage2
+    jobs:
+      - job: Stage4Job1
+        displayName: Stage 4 Job 1
+        variables:
+          dependencies: $[ convertToJson(dependencies) ]
+          stageDependencies: $[ convertToJson(stageDependencies) ]
+          varFrom_Stage1DeploymentJob1: $[ stageDependencies.Stage1.Stage1DeploymentJob1.outputs['Stage1DeploymentJob1.stepVar_Stage1DeploymentJob1.my_Stage1DeploymentJob1_OutputVar'] ]
+          varFrom_Stage2DeploymentJob1: $[ stageDependencies.Stage2.Stage2DeploymentJob1.outputs['Stage2DeploymentJob1.stepVar_Stage2DeploymentJob1.my_Stage2DeploymentJob1_OutputVar'] ]
+          varFrom_Stage3Job2: $[ stageDependencies.Stage3.Stage3Job2.outputs['stepVar_Stage3Job2.my_Stage3Job2_OutputVar'] ]
+
+        steps:
+          - checkout: none
           - bash: echo "$(dependencies)"
             displayName: dependencies
           - bash: echo "$(stageDependencies)"
             displayName: stageDependencies
-          - bash: echo $(varFrom_Stage1DeploymentJob1)
-            displayName: Display varFrom_Stage1DeploymentJob1
+          - bash: |
+              echo "varFrom_Stage1DeploymentJob1: $(varFrom_Stage1DeploymentJob1)"
+              echo "varFrom_Stage2DeploymentJob1: $(varFrom_Stage2DeploymentJob1)"
+              echo "varFrom_Stage3Job2: $(varFrom_Stage3Job2)"
+            displayName: Display variables
           - bash: printenv
             displayName: printenv
 
-  - job: Stage3Job2
-    displayName: Stage 3 Job 2
-    steps:
-      - checkout: none
-      - bash: echo "##vso[task.setvariable variable=my_Stage3Job2_OutputVar;isOutput=true]Variable from $(Agent.JobName)"
-        name: stepVar_Stage3Job2
-        displayName: Set my_Stage3Job2_OutputVar
-
-- stage: Stage4
-  displayName: Stage 4
-  dependsOn:
-    # Need to mention stage here to be able to reference variables from it, even though the dependency is implied by Stage2 and Stage3
-    - Stage1
-    - Stage3
-    - Stage2
-  jobs:
-  - job: Stage4Job1
-    displayName: Stage 4 Job 1
-    variables:
-      dependencies: $[ convertToJson(dependencies) ]
-      stageDependencies: $[ convertToJson(stageDependencies) ]
-      varFrom_Stage1DeploymentJob1: $[ stageDependencies.Stage1.Stage1DeploymentJob1.outputs['Stage1DeploymentJob1.stepVar_Stage1DeploymentJob1.my_Stage1DeploymentJob1_OutputVar'] ]
-      varFrom_Stage2DeploymentJob1: $[ stageDependencies.Stage2.Stage2DeploymentJob1.outputs['Stage2DeploymentJob1.stepVar_Stage2DeploymentJob1.my_Stage2DeploymentJob1_OutputVar'] ]
-      varFrom_Stage3Job2: $[ stageDependencies.Stage3.Stage3Job2.outputs['stepVar_Stage3Job2.my_Stage3Job2_OutputVar'] ]
-
-    steps:
-    - checkout: none
-    - bash: echo "$(dependencies)"
-      displayName: dependencies
-    - bash: echo "$(stageDependencies)"
-      displayName: stageDependencies
-    - bash: |
-        echo "varFrom_Stage1DeploymentJob1: $(varFrom_Stage1DeploymentJob1)"
-        echo "varFrom_Stage2DeploymentJob1: $(varFrom_Stage2DeploymentJob1)"
-        echo "varFrom_Stage3Job2: $(varFrom_Stage3Job2)"
-      displayName: Display variables
-    - bash: printenv
-      displayName: printenv
-
-- ${{ each value in parameters.listOfStrings }}:
-  - stage: ${{ value }}
-    displayName: ${{ value }}
-    jobs:
-      - job:
-        steps:
-          - checkout: none
-          #- bash: echo "${{ convertToJson(stageDependencies) }}"
+  - ${{ each value in parameters.listOfStrings }}:
+      - stage: ${{ value }}
+        displayName: ${{ value }}
+        jobs:
+          - job:
+            steps:
+              - checkout: none
+              #- bash: echo "${{ convertToJson(stageDependencies) }}"

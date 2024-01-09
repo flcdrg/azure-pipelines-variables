@@ -2,9 +2,12 @@ jobs:
   - job: MyJob
     variables:
       - template: variables-template.yml
+        parameters:
+          VariableParameter: MyJobLevel
 
     steps:
       - script: printenv
-        displayName: 'printenv'
+        displayName: "printenv"
       - script: echo "Hi there ${{ variables.GlobalVar }}"
       - script: echo "Hi there $(GlobalVar)"
+      - script: echo "GlobalVar2 ${{ variables.GlobalVar2 }}"
