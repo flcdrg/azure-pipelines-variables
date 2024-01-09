@@ -12,3 +12,9 @@ jobs:
       - script: echo "Hi there $(GlobalVar)"
       - script: echo "GlobalVar2 ${{ variables.GlobalVar2 }}"
       - script: echo "Hi there GlobalVar2 $(GlobalVar2)"
+
+      - script: env -0 | sort -z | tr '\0' '\n'
+        displayName: "printenv with extra env vars"
+        env:
+          ExtraVar: ${{ variables.GlobalVar }}
+          ExtraVar2: ${{ variables.GlobalVar2 }}
