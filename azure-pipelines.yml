@@ -77,7 +77,7 @@ stages:
                   displayName: stageDependencies
                 - bash: echo $(varFrom_Stage1DeploymentJob1)
                   displayName: Display varFrom_Stage1DeploymentJob1
-                - bash: printenv
+                - bash: env -0 | sort -z | tr '\0' '\n'
                   displayName: printenv
 
       - job: Stage3Job2
@@ -116,7 +116,7 @@ stages:
               echo "varFrom_Stage2DeploymentJob1: $(varFrom_Stage2DeploymentJob1)"
               echo "varFrom_Stage3Job2: $(varFrom_Stage3Job2)"
             displayName: Display variables
-          - bash: printenv
+          - bash: env -0 | sort -z | tr '\0' '\n'
             displayName: printenv
 
   - ${{ each value in parameters.listOfStrings }}:

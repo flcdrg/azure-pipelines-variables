@@ -6,7 +6,7 @@ jobs:
           VariableParameter: MyJobLevel
 
     steps:
-      - script: printenv
+      - script: env -0 | sort -z | tr '\0' '\n'
         displayName: "printenv"
       - script: echo "Hi there ${{ variables.GlobalVar }}"
       - script: echo "Hi there $(GlobalVar)"

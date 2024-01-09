@@ -1,11 +1,11 @@
 parameters:
   - name: VariableParameter
     type: string
-    default: Default
+    default: DefaultValue
 
 variables:
   - name: GlobalVar
     value: Global
 
   - name: GlobalVar2
-    value: Global2 - ${{ variables.VariableParameter }}
+    value: Global2 - ${{ variables.VariableParameter }} - End
