@@ -8,4 +8,4 @@ variables:
     value: Global
 
   - name: GlobalVar2
-    value: Global2 - ${{ variables.VariableParameter }} - End
+    value: Global2 - ${{ parameters.VariableParameter }} - End
