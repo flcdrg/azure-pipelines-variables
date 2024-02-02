@@ -88,6 +88,12 @@ stages:
             name: stepVar_Stage3Job2
             displayName: Set my_Stage3Job2_OutputVar
 
+      - job: Stage3Job3
+        displayName: Stage 3 Job 3
+        condition: and(succeeded(), ne(variables['varFrom_Stage1DeploymentJob1'], ''))
+        steps:
+          - checkout: none
+    
   - stage: Stage4
     displayName: Stage 4
     dependsOn:
