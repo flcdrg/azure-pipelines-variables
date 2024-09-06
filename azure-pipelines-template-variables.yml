@@ -17,6 +17,7 @@ stages:
     displayName: Stage 1
     variables:
       AUsefulVariable: "StageLevelValue"
+      StageLevelVariable: "StageLevelValue2"
 
     jobs:
       - job: Job1

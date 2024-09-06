@@ -13,6 +13,10 @@ jobs:
       - script: echo "GlobalVar2 ${{ variables.GlobalVar2 }}"
       - script: echo "Hi there GlobalVar2 $(GlobalVar2)"
 
+      - script: |
+          echo "StageLevelVariable: $(StageLevelVariable)"
+        displayName: "StageLevelVariable"
+
       - script: env -0 | sort -z | tr '\0' '\n'
         displayName: "printenv with extra env vars"
         env:
