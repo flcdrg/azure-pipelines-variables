@@ -1,0 +1,73 @@
+trigger: none
+stages:
+  - stage: Perf
+    displayName: Perf
+    jobs:
+      - job: SetAuthPerf
+        displayName: Set Variable Job
+        steps:
+          - checkout: self
+            clean: true
+
+          - task: PowerShell@2
+            displayName: Set Variable Task
+            name: SetCredentials
+            inputs:
+              pwsh: true
+              targetType: "inline"
+              script: |
+                Write-Host "##vso[task.setvariable variable=SERVER_CREDENTIALS_USER_NAME;isOutput=true]ThisIsATest"
+
+      - job: Perf
+        displayName: Perf
+        dependsOn:
+          - SetAuthPerf
+        variables:
+          - name: SERVER_CREDENTIALS_USER_NAME
+            value: $[dependencies.SetAuthPerf.outputs['SetCredentials.SERVER_CREDENTIALS_USER_NAME']]
+        steps:
+          - checkout: self
+            clean: true
+          - task: PowerShell@2
+            displayName: "Checking"
+            inputs:
+              pwsh: true
+              targetType: "inline"
+              script: |
+                Write-Host "UserName: $(SERVER_CREDENTIALS_USER_NAME)"
+
+  - stage: Prod
+    displayName: Prod
+    jobs:
+      - job: SetAuthProd
+        displayName: Set Variable Job
+        steps:
+          - checkout: none
+            clean: true
+
+          - task: PowerShell@2
+            displayName: Set Variable Task
+            name: SetCredentials
+            inputs:
+              pwsh: true
+              targetType: "inline"
+              script: |
+                Write-Host "##vso[task.setvariable variable=SERVER_CREDENTIALS_USER_NAME;isOutput=true]ThisIsATest"
+
+      - job: Prod
+        displayName: Prod
+        dependsOn:
+          - SetAuthProd
+        variables:
+          - name: SERVER_CREDENTIALS_USER_NAME
+            value: $[dependencies.SetAuthProd.outputs['SetCredentials.SERVER_CREDENTIALS_USER_NAME']]
+        steps:
+          - checkout: self
+            clean: true
+          - task: PowerShell@2
+            displayName: "Checking"
+            inputs:
+              pwsh: true
+              targetType: "inline"
+              script: |
+                Write-Host "UserName: $(SERVER_CREDENTIALS_USER_NAME)"
