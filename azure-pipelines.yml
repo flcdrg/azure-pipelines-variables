@@ -15,13 +15,33 @@ stages:
   - stage: Stage1
     displayName: Stage 1
     jobs:
+      - job: Stage1Job1
+        displayName: Stage 1 Job 1
+        steps:
+          - checkout: none
+
+          - bash: echo "##vso[task.setvariable variable=my_Stage1Job1_OutputVar;isOutput=true]Variable set in stepVar_Stage1Job1"
+            name: stepVar_Stage1Job1
+            displayName: Set my_Stage1Job1_OutputVar
+
       - deployment: Stage1DeploymentJob1
         displayName: Stage 1 Deployment Job 1
+        dependsOn: Stage1Job1
+        variables:
+          dependencies: $[ convertToJson(dependencies) ]
+          # Reference variable from job in same stage
+          varFrom_Stage1Job1: $[ dependencies.Stage1Job1.outputs['Stage1Job1.stepVar_Stage1Job1.my_Stage1Job1_OutputVar'] ]
         environment: Environment1
         strategy:
           runOnce:
             deploy:
               steps:
+                - bash: echo "$(dependencies)"
+                  displayName: dependencies
+
+                - bash: echo "$(varFrom_Stage1Job1)"
+                  displayName: Display varFrom_Stage1Job1
+
                 - bash: echo "##vso[task.setvariable variable=my_Stage1DeploymentJob1_OutputVar;isOutput=true]Variable from $(Agent.JobName)"
                   name: stepVar_Stage1DeploymentJob1
                   displayName: Set my_Stage1DeploymentJob1_OutputVar
@@ -93,7 +113,7 @@ stages:
         condition: and(succeeded(), ne(variables['varFrom_Stage1DeploymentJob1'], ''))
         steps:
           - checkout: none
-    
+
   - stage: Stage4
     displayName: Stage 4
     dependsOn:
