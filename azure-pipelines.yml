@@ -30,7 +30,7 @@ stages:
         variables:
           dependencies: $[ convertToJson(dependencies) ]
           # Reference variable from job in same stage
-          varFrom_Stage1Job1: $[ dependencies.Stage1Job1.outputs['Stage1Job1.stepVar_Stage1Job1.my_Stage1Job1_OutputVar'] ]
+          varFrom_Stage1Job1: $[ dependencies.Stage1Job1.outputs['stepVar_Stage1Job1.my_Stage1Job1_OutputVar'] ]
         environment: Environment1
         strategy:
           runOnce:
