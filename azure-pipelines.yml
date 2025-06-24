@@ -27,7 +27,7 @@ stages:
       - deployment: Stage1DeploymentJob1
         displayName: Stage 1 Deployment Job 1
         dependsOn: Stage1Job1
-        condition: and(succeeded(), eq( $[ dependencies.Stage1Job1.outputs['stepVar_Stage1Job1.my_Stage1Job1_OutputVar'] ], 'Variable set in stepVar_Stage1Job1'))
+        condition: and(succeeded(), eq( variables.varFrom_Stage1Job1, 'Variable set in stepVar_Stage1Job1'))
         variables:
           dependencies: $[ convertToJson(dependencies) ]
           # Reference variable from job in same stage
