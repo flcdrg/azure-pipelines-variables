@@ -47,6 +47,16 @@ stages:
                   name: stepVar_Stage1DeploymentJob1
                   displayName: Set my_Stage1DeploymentJob1_OutputVar
 
+      - job: Stage1Job2
+        displayName: Stage 1 Job 2 will not run due to condition
+        dependsOn: Stage1Job1
+        condition: and(succeeded(), ne( variables.varFrom_Stage1Job1, 'Variable set in stepVar_Stage1Job1'))
+        variables:
+          varFrom_Stage1Job1: $[ dependencies.Stage1Job1.outputs['stepVar_Stage1Job1.my_Stage1Job1_OutputVar'] ]
+        steps:
+          - checkout: none
+
+
   - stage: Stage2
     displayName: Stage 2
     dependsOn: Stage1
