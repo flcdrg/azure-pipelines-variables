@@ -24,6 +24,10 @@ stages:
             name: stepVar_Stage1Job1
             displayName: Set my_Stage1Job1_OutputVar
 
+          - bash: echo "Conditional step with $(stepVar_Stage1Job1.my_Stage1Job1_OutputVar)"
+            condition: and(succeeded(), eq(variables.varFrom_Stage1Job1, 'Variable set in stepVar_Stage1Job1'))
+            displayName: Conditional step
+
       - deployment: Stage1DeploymentJob1
         displayName: Stage 1 Deployment Job 1
         dependsOn: Stage1Job1
@@ -55,7 +59,6 @@ stages:
           varFrom_Stage1Job1: $[ dependencies.Stage1Job1.outputs['stepVar_Stage1Job1.my_Stage1Job1_OutputVar'] ]
         steps:
           - checkout: none
-
 
   - stage: Stage2
     displayName: Stage 2
