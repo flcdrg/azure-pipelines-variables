@@ -25,7 +25,7 @@ stages:
             displayName: Set my_Stage1Job1_OutputVar
 
           - bash: echo "Conditional step with $(stepVar_Stage1Job1.my_Stage1Job1_OutputVar)"
-            condition: and(succeeded(), eq(variables[stepVar_Stage1Job1.my_Stage1Job1_OutputVar], 'Variable set in stepVar_Stage1Job1'))
+            condition: and(succeeded(), eq(variables['stepVar_Stage1Job1.my_Stage1Job1_OutputVar'], 'Variable set in stepVar_Stage1Job1'))
             displayName: Conditional step
 
       - deployment: Stage1DeploymentJob1
