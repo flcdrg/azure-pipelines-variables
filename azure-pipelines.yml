@@ -14,6 +14,8 @@ pool:
 stages:
   - stage: Stage1
     displayName: Stage 1
+    variables:
+      VARIABLE1: "A Variable1"
     jobs:
       - job: Stage1Job1
         displayName: Stage 1 Job 1
@@ -27,6 +29,16 @@ stages:
           - bash: echo "Conditional step with $(stepVar_Stage1Job1.my_Stage1Job1_OutputVar)"
             condition: and(succeeded(), eq(variables['stepVar_Stage1Job1.my_Stage1Job1_OutputVar'], 'Variable set in stepVar_Stage1Job1'))
             displayName: Conditional step
+
+          - bash: |
+              echo "VARIABLE1: $VARIABLE1"
+              # references a runtime variable that is not actually defined
+              echo "VARIABLE2: $VARIABLE2"
+              # This is not defined at all
+              echo "VARIABLE3: $VARIABLE3"
+            displayName: "Displaying undefined variables"
+            env:
+              VARIABLE2: $(UndefinedVariable)
 
       - deployment: Stage1DeploymentJob1
         displayName: Stage 1 Deployment Job 1
