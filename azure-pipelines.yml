@@ -14,7 +14,9 @@ pool:
 variables:
   GLOBAL_VAR: "A Global Variable"
   VariableWithValueFromUIVariable: "$(VariableDefinedInUI)"
-  ServiceConnectionVariableWithValueFromUIVariable: "$(ServiceConnectionDefinedInUI)"
+  # Trying to use $(ServiceConnectionDefinedInUI) results in an error
+  # 'The pipeline is not valid. Job Stage1Job1: Step AzureCLI1 input connectedServiceNameARM references service connection $(ServiceConnectionDefinedInUI) which could not be found. The service connection does not exist, has been disabled or has not been authorized for use.'
+  ServiceConnectionVariableWithValueFromUIVariable: "${{ variables.ServiceConnectionDefinedInUI }}"
 
 stages:
   - stage: Stage1
