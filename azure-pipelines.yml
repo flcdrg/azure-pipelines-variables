@@ -11,6 +11,11 @@ trigger:
 pool:
   vmImage: "ubuntu-latest"
 
+variables:
+  GLOBAL_VAR: "A Global Variable"
+  VariableWithValueFromUIVariable: "$(VariableDefinedInUI)"
+  ServiceConnectionVariableWithValueFromUIVariable: "$(ServiceConnectionDefinedInUI)"
+
 stages:
   - stage: Stage1
     displayName: Stage 1
@@ -39,6 +44,24 @@ stages:
             displayName: "Displaying undefined variables"
             env:
               VARIABLE2: $(UndefinedVariable)
+
+          - task: AzureCLI@2
+            displayName: "Azure CLI with macro syntax"
+            inputs:
+              azureSubscription: $(ServiceConnectionVariableWithValueFromUIVariable)
+              scriptType: pscore
+              scriptLocation: inlineScript
+              inlineScript: |
+                az --version
+
+          - task: AzureCLI@2
+            displayName: "Azure CLI with template syntax"
+            inputs:
+              azureSubscription: ${{ variables.ServiceConnectionVariableWithValueFromUIVariable }}
+              scriptType: pscore
+              scriptLocation: inlineScript
+              inlineScript: |
+                az --version
 
       - deployment: Stage1DeploymentJob1
         displayName: Stage 1 Deployment Job 1
